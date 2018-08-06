@@ -1,12 +1,13 @@
 'use strict';
+const passport = require('passport');
 const { Strategy: LocalStrategy } = require('passport-local');
 const { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt');
 
 const { User } = require('../models/user');
 const { JWT_SECRET } = require('../config');
 
-const LocalStrategy = new LocalStrategy((username, password, callback) => {
-	let user: 
+const localStrategy = new LocalStrategy((username, password, callback) => {
+	let user;
 	User.findOne({ username: username })
 		.then(_user => {
 			user = _user;
@@ -31,6 +32,7 @@ const LocalStrategy = new LocalStrategy((username, password, callback) => {
 			if (err.reason === 'LoginError') {
 				return callback(null, false, err);
 			}
+			console.log(err);
 			return callback(err, false);
 		});
 });
