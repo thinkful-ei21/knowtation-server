@@ -7,7 +7,8 @@ const QuestionSchema = mongoose.Schema({
 	title: { type: String, required: true },
 	question: { type: String, required: true },
 	answer: { type: String, required: true },
-	hint: { type: String }
+	hint: { type: String },
+	explanation: { type: String }
 });
 
 QuestionSchema.methods.serialize = function() {
@@ -16,7 +17,8 @@ QuestionSchema.methods.serialize = function() {
 		question: this.question,
 		title: this.title,
 		hint: this.hint,
-		answer: this.answer
+		answer: this.answer,
+		explanation: this.explanation
 	}
 };
 
