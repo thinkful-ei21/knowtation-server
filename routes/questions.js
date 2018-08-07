@@ -22,7 +22,7 @@ router.get('/', jwtAuth, jsonParser, (req, res, next) => {
 /** POST endpoint - to submit a question **/
 router.post('/submit', jwtAuth, jsonParser, (req, res, next) => {
     let { question, answer, hint, title } = req.body;
-    return Question.create({question, answer, hint, title})
+    return Question.create({question: encodeURI(question), answer, hint, title})
         .then(question => {
             return res.status(201).json(question.serialize());
         })

@@ -15,7 +15,8 @@ QuestionSchema.methods.serialize = function() {
 		id: this._id,
 		question: this.question,
 		title: this.title,
-		hint: this.hint
+		hint: this.hint,
+		answer: this.answer
 	}
 };
 
