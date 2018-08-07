@@ -34,7 +34,7 @@ passport.use(jwtStrategy);
 
 /*** initialize our routes here ***/
 app.use('/api/users', usersRouter);
-app.use('/auth', authRouter);
+app.use('/api/auth', authRouter);
 
 function runServer(port = PORT) {
   const server = app
