@@ -11,6 +11,12 @@ router.use(bodyParser.json());
 
 const { User } = require('../models/user');
 
+passport.serializeUser(function(user, done) {
+    // done(null, user._id);
+    // if you use Model.id as your idAttribute maybe you'd want
+    done(null, user.id);
+});
+
 const createAuthToken = function(user) {
 	return jwt.sign({user}, config.JWT_SECRET, {
 		subject: user.username,

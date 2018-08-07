@@ -10,11 +10,14 @@ const { dbConnect } = require('./db-mongoose');
 const bodyParser = require('body-parser');
 
 const { router: usersRouter } = require('./routes/users');
+const { router: questionsRouter } = require('./routes/questions');
 const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
 
 const app = express();
 
 app.use(bodyParser.json());
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use(
   morgan(process.env.NODE_ENV === 'production' ? 'common' : 'dev', {
@@ -35,6 +38,7 @@ passport.use(jwtStrategy);
 /*** initialize our routes here ***/
 app.use('/api/users', usersRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/questions', questionsRouter);
 
 function runServer(port = PORT) {
   const server = app
