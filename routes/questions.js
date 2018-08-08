@@ -14,7 +14,7 @@ router.use(passport.authenticate('jwt', { sessions: false, failWithError: true})
 /** GET endpoint - should return only 1 question **/
 router.get('/', jsonParser, (req, res, next) => {
     let id = req.user.id;
-    let user = User.findById(id)
+    User.findById(id)
         .then(user => user.questions)
         .then(data => res.json(data))
         .catch(err => console.err(err));
