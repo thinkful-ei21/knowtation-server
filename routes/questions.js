@@ -14,8 +14,8 @@ router.use(passport.authenticate('jwt', { sessions: false, failWithError: true})
 /** GET endpoint - should return only 1 question **/
 router.get('/', jsonParser, (req, res, next) => {
     let id = req.user.id;
-    let user = User.findById(id)
-        .then(user => user.questions)
+    let user = User.findById(id).populate('questions.question')
+        .then(user => user.questions[user.head])
         .then(data => res.json(data))
         .catch(err => console.err(err));
 });
@@ -43,6 +43,7 @@ router.post('/answer', jsonParser, (req, res, next) => {
     return Question.findById(question)
                     .then(question => {
                         if (question.answer === answer) {
+                            //we nee
                             return res.json({response: true})
                         } else {
                             return res.json({response: false})
