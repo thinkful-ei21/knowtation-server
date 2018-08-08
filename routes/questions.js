@@ -6,6 +6,7 @@ const router = express.Router();
 const jsonParser = bodyParser.json();
 const { Question } = require('../models/question');
 const { User } = require('../models/user');
+const { Result } = require('../models/result');
 
 /** import auth stuff **/
 const passport = require('passport');
@@ -38,17 +39,29 @@ router.post('/submit', jsonParser, (req, res, next) => {
 /** POST answer/result to an endpoint **/
 router.post('/answer', jsonParser, (req, res, next) => {
     let {answer, question} = req.body;
-    let {id} = req.user.id;
+    let {id} = req.user;
+    let result;
 
     return Question.findById(question)
                     .then(question => {
-                        if (question.answer === answer) {
-                            //we nee
-                            return res.json({response: true})
-                        } else {
-                            return res.json({response: false})
+                        result = question.answer === answer ? true : false;
+                        Result.create({question, user: id, result});
+                        return question;
+                    }).then(question => {
+                        if (result) {
+                            return User.findById(id)
+                                .then(user => {
+                                    user.head = question.next;
+                                    if (user.questions[user.questions.length - 1] === null) {
+                                        user.questions[user.questions.length - 1].next = question;
+                                        question.next = null;
+                                    }
+                                    user.save();
+                                })
                         }
-                    })
+
+        })
+        .then(() => res.json(result))
                     .catch(err => console.error(err))
 })
 
