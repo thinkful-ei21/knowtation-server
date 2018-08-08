@@ -31,7 +31,7 @@ app.use(
   })
 );
 
-/*** ***/
+/*** tell it to use the passport strategies ***/
 passport.use(localStrategy);
 passport.use(jwtStrategy);
 

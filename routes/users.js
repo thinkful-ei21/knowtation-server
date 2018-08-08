@@ -6,6 +6,7 @@ const router = express.Router();
 const jsonParser = bodyParser.json();
 const bcrypt = require('bcryptjs');
 const { User } = require('../models/user');
+const { Question } = require('../models/question');
 
 /** import auth stuff **/
 const passport = require('passport');
@@ -13,7 +14,8 @@ const jwtAuth = passport.authenticate('jwt', {session: false, failWithError: tru
 
 /*** simple get endpoint for querying info about all users. this will probably never be used ***/
 router.get('/', jwtAuth, jsonParser, (req, res, next) => {
-	return User.find({})
+	return User.find()
+				.populate('questions')
 				.then(data =>{
 					return res.status(201).json(data);
 				})
@@ -50,24 +52,42 @@ router.post('/', jsonParser, (req, res, next) => {
 					return User.hashPassword(password);
 				})
 				.then(hash => {
-					return User.create({username, password: hash, firstName, lastName});
+                    return Question.find()
+									.then(questions =>
+
+										User.create(
+										{
+											username,
+											password: hash,
+											firstName,
+											lastName,
+											questions: questions.map((question, index) => {
+												return {
+													question,
+													memoryStrength: 0,
+													next: index + 1 === questions.length ? null : index + 1
+												}
+										})
+					}
+					))
 				})
 				.then(user => {
 					return res.status(201).json(user.serialize());
 				})
 				.catch(err => {
-					if (err.reason === 'ValidationError') {
-						return res.status(err.code).json(err);
+					if (err.name === 'ValidationError') {
+						return res.status(500).json(err);
 					}
-					console.log(err);
+					// console.log(err);
 					res.status(500).json({code: 500, message: 'Internal server error'});
 				});
 });
 
 /*** get user by ID ***/
-router.get('/:id', jsonParser, (req, res, next) => {
-	const { id } = req.body.id;
-	//get the user by id via mongoose
+router.get('/:id', jwtAuth, jsonParser, (req, res, next) => {
+	const { id } = req.params;
+	return User.findById({_id: id}).populate('questions.question')
+				.then(user => res.status(201).json(user));
 });
 
 /*** update a user by grabbing their id ***/

@@ -5,22 +5,23 @@ const bodyParser = require('body-parser');
 const router = express.Router();
 const jsonParser = bodyParser.json();
 const { Question } = require('../models/question');
+const { User } = require('../models/user');
 
 /** import auth stuff **/
 const passport = require('passport');
-const jwtAuth = passport.authenticate('jwt', { sessions: false, failWithError: true});
+router.use(passport.authenticate('jwt', { sessions: false, failWithError: true}));
 
-/** GET endpoint - should return only 1 question at random **/
-router.get('/', jwtAuth, jsonParser, (req, res, next) => {
-    return Question.findOne({})
-        .then(questions => {
-            return res.status(201).json(questions);
-        })
-        .catch(err => console.error(err));
+/** GET endpoint - should return only 1 question **/
+router.get('/', jsonParser, (req, res, next) => {
+    let id = req.user.id;
+    let user = User.findById(id)
+        .then(user => user.questions)
+        .then(data => res.json(data))
+        .catch(err => console.err(err));
 });
 
 /** POST endpoint - to submit a question **/
-router.post('/submit', jwtAuth, jsonParser, (req, res, next) => {
+router.post('/submit', jsonParser, (req, res, next) => {
     let { question, answer, hint, title, explanation } = req.body;
     return Question.create({question: encodeURI(question), answer, hint, title, explanation})
         .then(question => {
@@ -35,9 +36,19 @@ router.post('/submit', jwtAuth, jsonParser, (req, res, next) => {
 });
 
 /** POST answer/result to an endpoint **/
-router.post('/answer', jwtAuth, jsonParser, (req, res, next) => {
-    let {answer} = req.body;
+router.post('/answer', jsonParser, (req, res, next) => {
+    let {answer, question} = req.body;
+    let {id} = req.user.id;
 
+    return Question.findById(question)
+                    .then(question => {
+                        if (question.answer === answer) {
+                            return res.json({response: true})
+                        } else {
+                            return res.json({response: false})
+                        }
+                    })
+                    .catch(err => console.error(err))
 })
 
 module.exports = { router };

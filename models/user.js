@@ -5,10 +5,20 @@ const bcrypt = require('bcryptjs');
 mongoose.Promise = global.Promise;
 
 const UserSchema = mongoose.Schema({
-	username: { type: String, require: true, unique: true },
+	username: { type: String, required: true, unique: true },
 	password: { type: String, required: true },
 	firstName: { type: String, required: true },
-	lastName: { type: String, required: true }
+	lastName: { type: String, required: true },
+	questions: [ {
+		memoryStrength: Number,
+		next: Number,
+		question: {type: mongoose.Schema.Types.ObjectId,
+		ref: 'Question'}
+	} ],
+	head: {
+		type: Number,
+		default: 0
+	}
 });
 
 UserSchema.methods.validatePassword = function(password) {
