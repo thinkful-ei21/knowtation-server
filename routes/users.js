@@ -24,7 +24,7 @@ router.post('/', (req, res, next) => {
   const requiredFields = ['username', 'password', 'firstName', 'lastName'];
   const missingField = requiredFields.find(field => !(field in req.body));
 
-	console.log(req.body);
+  console.log(req.body);
 
   if (missingField) {
     return res.status(422).json({
@@ -86,13 +86,5 @@ router.post('/', (req, res, next) => {
       res.status(500).json({ code: 500, message: err });
     });
 });
-
-/*** get user by ID ***/
-router.get('/:id', jwtAuth, (req, res, next) => {
-  const { id } = req.params;
-  return User.findById({_id: id}).populate('questions.question')
-    .then(user => res.status(201).json(user));
-});
-
 
 module.exports = { router };
