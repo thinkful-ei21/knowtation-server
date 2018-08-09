@@ -42,6 +42,9 @@ router.post('/answer', jsonParser, (req, res, next) => {
     let {id} = req.user;
     let result;
 
+    return User.findById(id)
+            .then(user => )
+
     return Question.findById(question)
                     .then(question => {
                         result = question.answer === answer ? true : false;
@@ -52,7 +55,7 @@ router.post('/answer', jsonParser, (req, res, next) => {
                             return User.findById(id)
                                 .then(user => {
                                     user.head = question.next;
-                                    if (user.questions[user.questions.length - 1] === null) {
+                                    if (user.questions[user.questions.length - 1].next === null) {
                                         user.questions[user.questions.length - 1].next = question;
                                         question.next = null;
                                     }
@@ -64,5 +67,13 @@ router.post('/answer', jsonParser, (req, res, next) => {
         .then(() => res.json(result))
                     .catch(err => console.error(err))
 })
+
+/*** HELPER METHODS **/
+const removeFirstQuestion = id => {
+    return User.findById({id})
+        .then(user => {
+            return user.
+        })
+}
 
 module.exports = { router };
