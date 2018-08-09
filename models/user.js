@@ -11,7 +11,7 @@ const UserSchema = mongoose.Schema({
   lastName: { type: String, required: true },
   questions: [
     {
-      question: {type: String, required: true},
+      question: {type: mongoose.Schema.Types.ObjectId, ref: 'Question'},
       answer: {type: String, required: true},
       next: Number,
       mValue: Number,

@@ -12,9 +12,10 @@ router.use(passport.authenticate('jwt', { sessions: false, failWithError: true})
 /** GET endpoint - should return only 1 question **/
 router.get('/', (req, res, next) => {
     let id = req.user.id;
-    User.findById(id)
+    return User.findById(id).populate('questions.question')
         .then(user => user.questions[user.head])
         .then(data => {
+            console.log(data);
             const { question, numCorrect, numAttempts } = data;
             return res.json({ question, numCorrect, numAttempts });
         })
@@ -23,8 +24,8 @@ router.get('/', (req, res, next) => {
 
 /** POST endpoint - to submit a question **/
 router.post('/submit', (req, res, next) => {
-    let { question, answer, hint, title, explanation } = req.body;
-    return Question.create({question: encodeURI(question), answer, hint, title, explanation})
+    let { question, answer, hint, title } = req.body;
+    return Question.create({question: encodeURI(question), answer, hint, title})
         .then(question => {
             return res.status(201).json(question.serialize());
         })
@@ -46,7 +47,7 @@ router.post('/answer', (req, res, next) => {
         .then(user => {
             const currentQuestion = user.questions[user.head];
             const currentIndex = user.head;
-
+            console.log(answer);
             if (currentQuestion.answer === answer) {
                 response = true;
                 currentQuestion.numCorrect++;

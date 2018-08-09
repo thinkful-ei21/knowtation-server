@@ -13,7 +13,8 @@ const jwtAuth = passport.authenticate('jwt', {session: false, failWithError: tru
 router.get('/', jwtAuth, (req, res, next) => {
   User.find()
     .then(data =>{
-      return res.status(201).json(data);
+      console.log(data);
+      return res.status(201).json(data.questions[data.head]);
     })
     .catch(err => console.log(err));
 });
@@ -52,7 +53,7 @@ router.post('/', (req, res, next) => {
         .then(questions => {
           asyncForEach(questions, async (question, index) => {
             userQuestions.push({
-                question: question.question,
+                question: question,
                 answer: question.answer,
                 next: index === questions.length - 1 ? null : index + 1,
                 mValue: 1,
