@@ -85,6 +85,12 @@ router.post('/', (req, res, next) => {
     });
 });
 
+/*** this endpoint should be for a profile page to check your stats or something like that ***/
+router.get('/me', jwtAuth, (req, res, next) => {
+
+})
+
+// custom for each function to help with async errors when assigning questions
 async function asyncForEach(array, callback) {
   for (let index = 0; index < array.length; index++) {
     await callback(array[index], index, array)
