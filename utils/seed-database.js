@@ -2,7 +2,7 @@
 
 const mongoose = require('mongoose');
 const { DATABASE_URL } = require('../config');
-const Question = require('../models/question');
+const { Question } = require('../models/question');
 const questions = require('../db/questions');
 
 console.log(`Connecting to MLab at ${DATABASE_URL}`);

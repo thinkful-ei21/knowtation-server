@@ -18,7 +18,7 @@ router.get('/', (req, res, next) => {
       const { question, numCorrect, numAttempts } = data;
       return res.json({ question, numCorrect, numAttempts });
     })
-    .catch(err => console.err(err));
+    .catch(err => console.log(err));
 });
 
 /** POST endpoint - to submit a question **/

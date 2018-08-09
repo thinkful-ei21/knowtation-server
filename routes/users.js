@@ -12,19 +12,16 @@ const jwtAuth = passport.authenticate('jwt', {session: false, failWithError: tru
 /*** simple get endpoint for querying info about all users. this will probably never be used ***/
 router.get('/', jwtAuth, (req, res, next) => {
   User.find()
-    .populate('questions')
     .then(data =>{
       return res.status(201).json(data);
     })
-    .catch(err => console.error(err));
+    .catch(err => console.log(err));
 });
 
 /*** our post endpoint that will create a user ***/
 router.post('/', (req, res, next) => {
   const requiredFields = ['username', 'password', 'firstName', 'lastName'];
   const missingField = requiredFields.find(field => !(field in req.body));
-
-  console.log(req.body);
 
   if (missingField) {
     return res.status(422).json({
@@ -38,7 +35,7 @@ router.post('/', (req, res, next) => {
   let { username, password, firstName, lastName } = req.body;
   let userQuestions = [];
 
-  User.find({username})
+  return User.find({username})
     .count()
     .then(count => {
       if (count > 0) {
@@ -65,10 +62,11 @@ router.post('/', (req, res, next) => {
             userQuestions.push(q);
           });
         })
-        .catch(err => console.error(err));
+        .catch(err => console.log(err));
       return User.hashPassword(password);
     })
     .then(hash => {
+      console.log(userQuestions); // WHY IS THIS EMPTY?!?!?!?!
       return User.create({
         questions: userQuestions,
         firstName,

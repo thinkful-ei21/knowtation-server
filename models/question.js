@@ -15,8 +15,6 @@ QuestionSchema.set('toObject', {
   versionKey: false
 });
 
-QuestionSchema.set('toObject', { virtuals: true});
-
 const Question = mongoose.model('Question', QuestionSchema);
 
 module.exports = { Question };
