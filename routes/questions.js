@@ -1,68 +1,96 @@
 'use strict';
 
 const express = require('express');
-const bodyParser = require('body-parser');
 const router = express.Router();
-const jsonParser = bodyParser.json();
-const { Question } = require('../models/question');
-const { User } = require('../models/user');
-const { Result } = require('../models/result');
+const Question = require('../models/question');
+const User = require('../models/user');
 
 /** import auth stuff **/
 const passport = require('passport');
 router.use(passport.authenticate('jwt', { sessions: false, failWithError: true}));
 
 /** GET endpoint - should return only 1 question **/
-router.get('/', jsonParser, (req, res, next) => {
-    let id = req.user.id;
-    let user = User.findById(id).populate('questions.question')
-        .then(user => user.questions[user.head])
-        .then(data => res.json(data))
-        .catch(err => console.err(err));
+router.get('/', (req, res, next) => {
+  let id = req.user.id;
+  User.findById(id)
+    .then(user => user.questions[user.head])
+    .then(data => {
+      const { question, numCorrect, numAttempts } = data;
+      return res.json({ question, numCorrect, numAttempts });
+    })
+    .catch(err => console.err(err));
 });
 
 /** POST endpoint - to submit a question **/
-router.post('/submit', jsonParser, (req, res, next) => {
-    let { question, answer, hint, title, explanation } = req.body;
-    return Question.create({question: encodeURI(question), answer, hint, title, explanation})
-        .then(question => {
-            return res.status(201).json(question.serialize());
-        })
-        .catch(err => {
-            if (err.reason === 'ValidationError') {
-                return res.status(err.code).json(err);
-            }
-            res.status(500).json({code: 500, message: err});
-        });
+router.post('/submit', (req, res, next) => {
+  let { question, answer, hint, title, explanation } = req.body;
+  return Question.create({question: encodeURI(question), answer, hint, title, explanation})
+    .then(question => {
+      return res.status(201).json(question.serialize());
+    })
+    .catch(err => {
+      if (err.reason === 'ValidationError') {
+        return res.status(err.code).json(err);
+      }
+      res.status(500).json({code: 500, message: err});
+    });
 });
 
 /** POST answer/result to an endpoint **/
-router.post('/answer', jsonParser, (req, res, next) => {
-    let {answer, question} = req.body;
-    let {id} = req.user;
-    let result;
+router.post('/answer', (req, res, next) => {
+  let {answer} = req.body;
+  let {id} = req.user;
+  let response;
 
-    return Question.findById(question)
-                    .then(question => {
-                        result = question.answer === answer ? true : false;
-                        Result.create({question, user: id, result});
-                        return question;
-                    }).then(question => {
-                        if (result) {
-                            return User.findById(id)
-                                .then(user => {
-                                    user.head = question.next;
-                                    if (user.questions[user.questions.length - 1] === null) {
-                                        user.questions[user.questions.length - 1].next = question;
-                                        question.next = null;
-                                    }
-                                    user.save();
-                                })
-                        }
+  User.findById(id)
+    .then(user => {
+      const currentQuestion = user.questions[user.head];
+      const currentIndex = user.head;
 
-        })
-        .then(() => res.json(result))
-                    .catch(err => console.error(err))
-})
+      if (currentQuestion.answer === answer) {
+        response = true;
+        currentQuestion.numCorrect++;
+        currentQuestion.numAttempts++;
+        currentQuestion.mValue *= 2;
+      } else {
+        response = false;
+        currentQuestion.numAttempts++;
+        currentQuestion.mValue = 1;
+      }
+
+      user.head = currentQuestion.next;
+
+      let insertAfter = currentQuestion;
+      let temp = currentQuestion;
+
+      for (let i = 0; i < currentQuestion.mValue; i++) {
+        let index = temp.next;
+        if (currentQuestion.mValue > user.questions.length) {
+          currentQuestion.mValue = user.questions.length - 1;
+          index = user.questions.length - 1;
+        }
+        insertAfter = user.questions[index];
+        temp = user.questions[temp.next];
+      }
+
+      if (insertAfter === null) {
+        currentQuestion.next = null;
+      } else {
+        currentQuestion.next = insertAfter.next;
+      }
+
+      insertAfter.next = currentIndex;
+
+      user.save();
+
+      return currentQuestion;
+    })
+    .then(question => {
+      const { answer, numCorrect, numAttempts } = question;
+      return res.json({ response, answer, numCorrect, numAttempts });
+    })
+    .catch(err => console.err(err));
+
+});
 
 module.exports = { router };
