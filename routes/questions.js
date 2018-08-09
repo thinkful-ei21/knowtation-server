@@ -2,8 +2,8 @@
 
 const express = require('express');
 const router = express.Router();
-const Question = require('../models/question');
-const User = require('../models/user');
+const { Question } = require('../models/question');
+const { User } = require('../models/user');
 
 /** import auth stuff **/
 const passport = require('passport');

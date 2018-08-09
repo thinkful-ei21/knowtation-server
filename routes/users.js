@@ -2,8 +2,8 @@
 
 const express = require('express');
 const router = express.Router();
-const User = require('../models/user');
-const Question = require('../models/question');
+const { User } = require('../models/user');
+const { Question } = require('../models/question');
 
 /** import auth stuff **/
 const passport = require('passport');
@@ -11,7 +11,7 @@ const jwtAuth = passport.authenticate('jwt', {session: false, failWithError: tru
 
 /*** simple get endpoint for querying info about all users. this will probably never be used ***/
 router.get('/', jwtAuth, (req, res, next) => {
-  return User.find()
+  User.find()
     .populate('questions')
     .then(data =>{
       return res.status(201).json(data);
@@ -38,7 +38,7 @@ router.post('/', (req, res, next) => {
   let { username, password, firstName, lastName } = req.body;
   let userQuestions = [];
 
-  return User.find({username})
+  User.find({username})
     .count()
     .then(count => {
       if (count > 0) {
