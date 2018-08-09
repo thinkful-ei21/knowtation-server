@@ -50,16 +50,15 @@ router.post('/', (req, res, next) => {
     .then(() => {
       Question.find()
         .then(questions => {
-          questions.forEach((question, index) => {
-            let q = {
-              question: question.question,
-              answer: question.answer,
-              next: index === questions.length - 1 ? null : index + 1,
-              mValue: 1,
-              numCorrect: 0,
-              numAttempts: 0
-            };
-            userQuestions.push(q);
+          asyncForEach(questions, async (question, index) => {
+            userQuestions.push({
+                question: question.question,
+                answer: question.answer,
+                next: index === questions.length - 1 ? null : index + 1,
+                mValue: 1,
+                numCorrect: 0,
+                numAttempts: 0
+            })
           });
         })
         .catch(err => console.log(err));
@@ -84,5 +83,11 @@ router.post('/', (req, res, next) => {
       res.status(500).json({ code: 500, message: err });
     });
 });
+
+async function asyncForEach(array, callback) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array)
+  }
+}
 
 module.exports = { router };
