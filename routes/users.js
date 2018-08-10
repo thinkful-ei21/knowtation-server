@@ -87,7 +87,10 @@ router.post('/', (req, res, next) => {
 
 /*** this endpoint should be for a profile page to check your stats or something like that ***/
 router.get('/me', jwtAuth, (req, res, next) => {
-
+  return User.findById(req.user.id).populate('questions.question')
+          .then(user => {
+            res.status(201).json(user);
+          })
 })
 
 // custom for each function to help with async errors when assigning questions

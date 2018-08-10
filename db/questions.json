@@ -1,26 +1,62 @@
 [
   {
-    "title":"Bubble Sort",
-    "question":"Testing",
+    "title":"Selection Sort",
+    "question":"<pre>const selectionSort = (list) => {\n    for (let i = 0; i < list.length; i += 1) {\n        let minJ = i;\n        for (let j = i + 1; j < list.length; j += 1) {\n            if (list[j] < list[minJ]) {\n                minJ = j;\n            }\n        }\n        const oldVal = list[i];\n        const newVal = list[minJ];\n\n        if (oldVal !== newVal) {\n            list[i] = newVal;\n            list[minJ] = oldVal;\n        }\n    }\n    return list;\n};</pre>",
     "answer":"n^2",
-    "hint":"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    "hint":"Take a look at the amount of times we will be iterating over the list. For every index in our original list, what happens next?."
   },
   {
-    "title":"Merge Sort",
-    "question":"Testing",
-    "answer":"logn",
-    "hint":"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    "title":"Fibonacci Counter",
+    "question":"<pre>let fibonacci_Counter = 0;\nfunction fibonacci(n) {\n    fibonacci_Counter++;\n    // Base case\n    if (n <= 0) {\n        return 0;\n    }\n    // Base case\n    if (n <= 2) {\n        return 1;\n    } \n    // Recursive case\n    return fibonacci(n - 1) + fibonacci(n - 2); \n}</pre>",
+    "answer":"2^n",
+    "hint":"We use recursion to create a counter of the 2 preceding numbers in the fibonacci sequence up until we get to the number passed in. If we pass in 6 the expected output is 8. (1, 1, 2, 3, 5, 8). This is done by first calling 2 recursive functions in our first iteration. In the second iteration, each of those functions will call a recursive function 2 times. As so on..."
   },
   {
-    "title":"Quick Sort",
-    "question":"Testing",
-    "answer":"logn",
-    "hint":"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    "title":"For Loop Console Log",
+    "question":"<pre>function showAllValues(arr) {\n  for (let i = 0; i < arr.length; i++) {\n    return arr[i];\n  }\n}</pre>",
+    "answer":"n",
+    "hint":"We are going to loop through an array, use i to access each value in the array and show the value there."
   },
   {
-    "title":"Bogo Sort",
-    "question":"Testing",
-    "answer":"infinite",
-    "hint":"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    "title":"Is This Even?",
+    "question":"%3Cpre%3Efunction%20isEven(value)%20%7B%0A%20%20if%20(value%20%25%202%20==%200)%20%7B%0A%20%20%20%20return%20true;%0A%20%20%7D%0A%20%20else%0A%20%20%20%20return%20false;%0A%7D%3C/pre%3E",
+    "answer":"1",
+    "hint":"How many actions are happening here?"
+  },
+  {
+    "title": "Efficient Search",
+    "question": "<pre>const quickSort = list => {\n  if (list.length < 2) \n    return list;\n  let pivot = list[0];\n  let left  = []; \n  let right = [];\n  for (let i = 1, total = list.length; i < total; i++){\n    if (list[i] < pivot)\n      left.push(list[i]);\n    else\n      right.push(list[i]);\n  }\n  return [\n    ...quickSort(left), \n    pivot, \n    ...quickSort(right)\n  ];\n};</pre>",
+    "answer": "logn",
+    "hint": "To solve, we split the array in half. We find the middle index, compare the value with our search item and start halving the appropriate side of the array until we get to our value."
+  },
+  {
+    "title": "Binary Representation",
+    "question": "<pre>var%20binary_Counter%20=%200;%0Afunction%20convertToBinary(num)%7B%0A%20%20%20%20binary_Counter++;%0A%20%20%20%20if(num%3E0)%7B%0A%20%20%20%20%20%20%20%20let%20binary%20=%20Math.floor(num%252);%0A%20%20%20%20%20%20%20%20return%20(convertToBinary(Math.floor(num/2))+%20binary);%0A%20%20%20%20%7Delse%7B%0A%20%20%20%20%20%20%20%20return%20'';%0A%20%20%20%20%7D%0A%7D</pre>",
+    "answer": "logn",
+    "hint": "With each iteration we will take half of our input and call recurse it until we ultimately reach nothing. "
+  },
+  {
+    "title": "Anagram Counter",
+    "question": "<pre>var anagram_Counter = 0;\nfunction printAnagram(word){\n    console.log(`The word for which we will find an anagram is ${word}`);\n    anagrams(' ', word);\n\n}\nfunction anagrams(prefix, str){\n    anagram_Counter++;\n    if(str.length <= 1){\n        console.log(`The anagram is ${prefix}${str}`);\n    } else {\n        for(let i=0; i<str.length; i++){\n            let currentLetter = str.substring(i, i+1);\n            let previousLetters = str.substring(0,i);\n            let afterLetters = str.substring(i+1);\n            anagrams(prefix+currentLetter, previousLetters+afterLetters);\n        }\n    }\n\n}</pre>",
+    "answer": "n!",
+    "hint": "This function will return the amount of anagrams in a given string. An anagram considers all permutations. We iterate over each index of the input string and come up with all possible combinations per character."
+  },
+  {
+    "title": "Count Triangles",
+    "question": "<pre>function countTriangle(layers) {\n    \n    let ticks = 1;\n    \n    let count = 0;\n    let layer = 0;\n    let lastLayer = 1;\n    while (layer < layers) {\n        ticks ++;\n        let newLayer = 0;\n        for (let i=0; i<lastLayer; i++) {\n            ticks++;\n            newLayer += 2;\n        }\n        lastLayer = newLayer;\n        count += lastLayer;\n        layer++;\n    }\n    return {result: count, ticks};\n}</pre>",
+    "answer": "2^n",
+    "hint": "We count the number of *'s in a triangle. As the input grows, so to does our for loop."
+  },
+  {
+    "title": "String Split",
+    "question": "<pre>var String_split_Counter = 0;\nfunction split(str, sep) {\n    String_split_Counter++;\n    var idx = str.indexOf(sep);\n    if (idx == -1) \n        return [str];\n    return [str.slice(0, idx)].concat(split(str.slice(idx + sep.length), sep))\n}</pre>",
+    "answer": "n",
+    "hint": "We will use recursion to hit every character in the string we passed in and execute the split we want."
+  },
+  {
+    "title": "Factorial",
+    "question": "<pre>function factorialIterative(number){\n    let counter = 0;\n    let fact = 1;\n    for (let i = 1; i <= number; i++){\n        fact *= i;\n        counter++;\n    }\n    console.log(`factorialIterative counter: ${counter}`);\n    return fact;\n}</pre>",
+    "answer": "n",
+    "hint": "We take a number and multiply our starting point by every number up until we reach the number we passed in."
   }
 ]

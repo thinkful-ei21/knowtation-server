@@ -25,15 +25,15 @@ router.get('/', (req, res, next) => {
 /** POST endpoint - to submit a question **/
 router.post('/submit', (req, res, next) => {
     let { question, answer, hint, title } = req.body;
-    return Question.create({question: encodeURI(question), answer, hint, title})
+    return Question.create({question, answer, hint, title})
         .then(question => {
-            return res.status(201).json(question.serialize());
+            return res.status(201).json(question);
         })
         .catch(err => {
             if (err.reason === 'ValidationError') {
                 return res.status(err.code).json(err);
             }
-            res.status(500).json({code: 500, message: err});
+            res.status(500).json({code: 500, message: err.message});
         });
 });
 
@@ -42,56 +42,64 @@ router.post('/answer', (req, res, next) => {
     let {answer} = req.body;
     let {id} = req.user;
     let response;
-
+    console.log('branched answer stuff');
     User.findById(id)
         .then(user => {
-            const currentQuestion = user.questions[user.head];
-            const currentIndex = user.head;
-            console.log(answer);
-            if (currentQuestion.answer === answer) {
+            console.log(`we got the user ${user.username}`);
+            let head = user.head;
+            let current = user.questions[head];
+            let next = current.next;
+            let response;
+
+            if (answer === current.answer) {
                 response = true;
-                currentQuestion.numCorrect++;
-                currentQuestion.numAttempts++;
-                currentQuestion.mValue *= 2;
+                correctAnswerIncrements(current, response);
+                let lastItem = findLast(user.questions, head);
+                lastItem.next = head;
+                user.head = next;
+                current.next = null;
+                console.log('response is supposed to be ' + response)
+
             } else {
                 response = false;
-                currentQuestion.numAttempts++;
-                currentQuestion.mValue = 1;
+                wrongAnswerIncrements(current, response);
+                let previousHead = user.head;
+                let previousHeadsNextValue = user.questions[previousHead].next;
+                user.head = user.questions[previousHead].next;
+                let newNextValueForNewHead = user.questions[previousHeadsNextValue].next;
+                user.questions[previousHead].next = newNextValueForNewHead;
+                user.questions[previousHeadsNextValue].next = previousHead;
             }
-
-            user.head = currentQuestion.next;
-
-            let insertAfter = currentQuestion;
-            let temp = currentQuestion;
-
-            for (let i = 0; i < currentQuestion.mValue; i++) {
-                let index = temp.next;
-                if (currentQuestion.mValue > user.questions.length) {
-                    currentQuestion.mValue = user.questions.length - 1;
-                    index = user.questions.length - 1;
-                }
-                insertAfter = user.questions[index];
-                temp = user.questions[temp.next];
-            }
-
-            if (insertAfter === null) {
-                currentQuestion.next = null;
-            } else {
-                currentQuestion.next = insertAfter.next;
-            }
-
-            insertAfter.next = currentIndex;
-
+            console.log('should be about to save');
             user.save();
 
-            return currentQuestion;
+            return user.questions[user.head];
         })
         .then(question => {
             const { answer, numCorrect, numAttempts } = question;
             return res.json({ response, answer, numCorrect, numAttempts });
         })
-        .catch(err => console.err(err));
+        .catch(err => console.error(err));
 
 });
+
+function findLast(list, head) {
+    let item = list[head];
+    while (item.next !== null) {
+        item = list[item.next]
+    }
+    return item;
+}
+
+function correctAnswerIncrements(question) {
+    question.numCorrect++;
+    question.numAttempts++;
+    question.mValue += 5;
+}
+
+function wrongAnswerIncrements(question) {
+    question.numAttempts++;
+    question.mValue = 1;
+}
 
 module.exports = { router };
