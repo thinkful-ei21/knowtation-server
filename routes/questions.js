@@ -49,11 +49,10 @@ router.post('/answer', (req, res, next) => {
             let head = user.head;
             let current = user.questions[head];
             let next = current.next;
-            let response;
 
             if (answer === current.answer) {
                 response = true;
-                correctAnswerIncrements(current, response);
+                correctAnswerIncrements(current);
                 let lastItem = findLast(user.questions, head);
                 lastItem.next = head;
                 user.head = next;
@@ -62,7 +61,7 @@ router.post('/answer', (req, res, next) => {
 
             } else {
                 response = false;
-                wrongAnswerIncrements(current, response);
+                wrongAnswerIncrements(current);
                 let previousHead = user.head;
                 let previousHeadsNextValue = user.questions[previousHead].next;
                 user.head = user.questions[previousHead].next;
@@ -76,6 +75,7 @@ router.post('/answer', (req, res, next) => {
             return user.questions[user.head];
         })
         .then(question => {
+            console.log('WE ARE EXPECTING A RESPONSE ' + response);
             const { answer, numCorrect, numAttempts } = question;
             return res.json({ response, answer, numCorrect, numAttempts });
         })
