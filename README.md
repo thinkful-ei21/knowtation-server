@@ -4,13 +4,13 @@ This is the front end of a spaced reptition learning project. The goal is to get
 
 Live demo is [here](https://knowtation-app.firebaseapp.com/) 
 
-Back end repo is [here](https://github.com/thinkful-ei21/knowtation-server)
+Front end repo is [here](https://github.com/thinkful-ei21/knowtation-client)
 
 ----
 
 ## Install
 
-Clone this repo, `cd` into the new project folder, run `npm install` in the terminal
+Clone this repo and the [front-end repo](https://github.com/thinkful-ei21/knowtation-client), `cd` into the new project folders, run `npm install` in the terminal for each folder, then `npm start`
 
 ## Technologies Used 
 
