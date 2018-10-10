@@ -1,16 +1,22 @@
 # Knowtation
 
-An app to learn Big O Notation using spaced repetition.
+This is the front end of a spaced reptition learning project. The goal is to get better at figuring out time complexity for algorithms. Using spaced reptition, this is an app to practice.
 
-## Getting started
+Live demo is [here](https://knowtation-app.firebaseapp.com/) 
 
-### Setting up the project
+Back end repo is [here](https://github.com/thinkful-ei21/knowtation-server)
 
-* Move into your projects directory: `cd ~/YOUR_PROJECTS_DIRECTORY`
-* Clone this repository
-* `cd` into the repository
-* Run `npm install`
+----
 
-### Database
+## Install
 
-This project is set up for using MongoDB. After installing and if you wish to use the app you'll need to put in some questions on your own. 
+Clone this repo, `cd` into the new project folder, run `npm install` in the terminal
+
+## Technologies Used 
+
+* Express
+* JSON Web Token
+* Mongoose
+* MongoDB
+* Passport
+
