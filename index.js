@@ -25,11 +25,7 @@ app.use(
   })
 );
 
-app.use(
-  cors({
-    origin: CLIENT_ORIGIN
-  })
-);
+app.use(cors());
 
 /*** tell it to use the passport strategies ***/
 passport.use(localStrategy);
